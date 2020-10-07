@@ -3,8 +3,8 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  // res.render('index', { title: 'Express' });
-  res.send("My Home Page");
+  // rendering index file from views folder
+  res.render('index', { title: 'Contact App' });
 });
 
 // POST Method
