@@ -10,6 +10,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var weatherRouter = require('./routes/weather');
 var contactsRouter = require('./routes/contacts');
+var emailRouter = require('./routes/email');
 
 const MongoClient = require('mongodb').MongoClient;
  
@@ -35,6 +36,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/weather', weatherRouter);
+app.use('/email', emailRouter);
+
 //app.use('/contacts', contactsRouter);
 
 app.use('/contacts', function(req, res){
