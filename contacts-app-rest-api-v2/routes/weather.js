@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
   
   // use request to show weather updates
   
-
+  res.send("It's a task. Refer Edureka's portal");
 
 });
 

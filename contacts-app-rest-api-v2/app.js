@@ -4,10 +4,21 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+//require('./config/mongo');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var weatherRouter = require('./routes/weather');
+var contactsRouter = require('./routes/contacts');
 
+const MongoClient = require('mongodb').MongoClient;
+ 
+// Connection URL
+const url = 'mongodb://localhost:27017';
+ 
+// Database Name
+const dbName = 'contactsDB';
+ 
 var app = express();
 
 // view engine setup
@@ -24,6 +35,35 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/weather', weatherRouter);
+//app.use('/contacts', contactsRouter);
+
+app.use('/contacts', function(req, res){
+  // Use connect method to connect to the server
+  MongoClient.connect(url, function(err, client) {
+    console.log("Connected successfully to server");
+  
+    const db = client.db(dbName);
+    
+    findContacts(db, function(data) {
+      console.log(data);
+      res.json(data);
+      client.close();
+    });
+  });
+
+});
+
+
+const findContacts = function(db, callback) {
+  // Get the documents collection
+  const collection = db.collection('contacts');
+  // Find some documents
+  collection.find({}).toArray(function(err, docs) {
+    console.log("Found the following records");
+    console.log(docs)
+    callback(docs);
+  });
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
