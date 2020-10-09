@@ -1,36 +1,37 @@
 var express = require('express');
+var contactService = require('../services/contactService');
+
 var router = express.Router();
+
+
 
 // POST contact 
 router.post('/', function (req, res, next) {
 
-  console.log(req.body);
-  let resp = req.body;
-  resp.id = 3;
+  //1. connect to service and send the above req to service
+  contactService.createContact(req , function(err, data ){
+    console.log(err);
+    console.log(data);
+    res.json(data);
+  } );
+  //2. get the res from service
   
-  res.json( resp );
-  
+
 });
 
 /* GET contacts listing. */
 router.get('/', function (req, res, next) {
-
-  let contactList = [
-    {
-      "id": 1,
-      "name": "Leanne Graham",
-      "email": "Sincere@april.biz",
-      "phone": "1-770-736-8031 x56442",
-    },
-    {
-      "id": 2,
-      "name": "Ervin Howell",
-      "email": "Shanna@melissa.tv",
-      "phone": "010-692-6593 x09125",
-    }];
-
-  res.json(contactList);
+  contactService.getContacts( function(err, data ){
+    if (!err) {
+      res.json(data);
+    } else {
+      res.json(err);
+    }
+  } )
+  
 });
+
+//Search 
 
 // GET Contact -- handling URL param - id 
 router.get('/:contactId', function (req, res, next) {
@@ -53,6 +54,7 @@ router.put('/:contactId', function (req, res, next) {
   res.json({ status: 'Updated Successfully'});
 });
 
+// Delete
 
 
 module.exports = router;
