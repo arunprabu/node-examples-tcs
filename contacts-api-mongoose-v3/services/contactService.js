@@ -30,3 +30,12 @@ exports.getContacts = function(callback){
     callback(err, contacts);
   });
 }
+
+//get contact by id 
+// update contact 
+
+//soft delete the contact - PUT 
+//hard delet the contact - DELETE 
+
+// search 
+// filter 

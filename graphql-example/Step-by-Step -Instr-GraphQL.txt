@@ -1,0 +1,37 @@
+1. create new nodejs express project 
+2. npm i express-graphql graphql 
+3. import express-graphql and graphql in app.js 
+    const { graphqlHTTP } = require("express-graphql");  // for Graph QL Setup
+    //setting up an end point for graphql 
+    app.use('/graphql', graphqlHTTP({
+      graphql: true
+    }));
+
+4. Hit the url http://localhost:3000/graphql
+    Find the error: 
+    {"errors":[{"message":"GraphQL middleware options must contain a schema."}]}
+
+5. Define schema 
+    in app.js itself 
+    5.1 const graphql = require('graphql');
+
+    5.2. use GraphQLSchema class to create a schema 
+      const schema = new GraphQLSchema({
+        query: new GraphQLObjectType({
+          name:'hello',
+          fields: () => ({
+            info: {
+              type: GraphQLString,
+              resolve: () => 'Hello GraphQL Learners'
+            }
+          })
+        })
+      });
+
+    5.3. use the above schema inside graphql api end point to complete the setup
+
+
+6. Try with Postman with content type 
+
+
+

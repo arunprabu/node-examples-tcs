@@ -3,20 +3,27 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var cors = require('cors');
-var passport = require('passport');
-var session = require('express-session');  //needed for passport
+const bodyParser = require('body-parser-graphql');
+const { graphqlHTTP } = require("express-graphql");  // for Graph QL Setup
 
+const graphql = require('graphql');
+
+const {GraphQLSchema, GraphQLObjectType, GraphQLString } = graphql;
+
+const schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name:'Hello',
+    fields: () => ({
+      info: {
+        type: GraphQLString,
+        resolve: () => 'Hello GraphQL Learners'
+      }
+    })
+  })
+});
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var contactsRouter = require('./routes/contacts');
-var authRouter = require('./routes/auth');
-
-//connecting the models here directly 
-require('./models/user');
-//connecting passport config
-require('./config/passportConfig');
 
 var app = express();
 
@@ -29,24 +36,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(cors()); // enabling cors
-
-// setting up authentication middleware
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(session({
-  secret: 'secret',
-  saveUninitialized: false,
-  resave: false
-}))
+app.use(bodyParser.graphql());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+//setting up an end point for graphql 
 
-// REST API Begins here
-app.use('/api/contacts', contactsRouter);
-app.use('/api/auth', authRouter);
+
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema: schema,
+    graphiql: true,
+  })
+);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

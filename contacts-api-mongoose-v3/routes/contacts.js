@@ -4,7 +4,6 @@ var contactService = require('../services/contactService');
 var router = express.Router();
 
 
-
 // POST contact 
 router.post('/', function (req, res, next) {
 
