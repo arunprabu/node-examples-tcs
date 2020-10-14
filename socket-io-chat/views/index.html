@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font: 13px Helvetica, Arial;
+    }
+
+    form {
+      background: #000;
+      padding: 3px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    form input {
+      border: 0;
+      padding: 10px;
+      width: 90%;
+      margin-right: 0.5%;
+    }
+
+    form button {
+      width: 9%;
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages li {
+      padding: 5px 10px;
+    }
+
+    #messages li:nth-child(odd) {
+      background: #eee;
+    }
+  </style>
+</head>
+
+<body>
+  <p>
+    <br>
+    <input type="text" id="nickNameText">
+    <button type="button" id="nickNameBtn">Set Nickname</button>
+  </p>
+  <ul id="messages"></ul>
+  <form action="">
+    <input id="m" autocomplete="off" /><button type="submit">Send</button>
+  </form>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script>
+    $(function () {
+      var userName;
+      var socket = io();
+
+      $('#nickNameBtn').click(function (e) {
+        // setting nick name -- look at the app.js 
+        socket.emit('set_nick_name', $('#nickNameText').val());
+      });
+
+      socket.on('get_nick_name', function (nickname) {
+        userName = nickname;
+      });
+      
+      $('form').submit(function (e) {
+        e.preventDefault(); // prevents page reloading
+        socket.emit('open_chat_session', $('#m').val());
+        $('#m').val('');
+        return false;
+      });
+      socket.on('chatting', function (msg) {
+        $('#messages').append($('<li>').text( msg));
+      });
+
+      
+
+    });
+  </script>
+</body>
+
+</html>
