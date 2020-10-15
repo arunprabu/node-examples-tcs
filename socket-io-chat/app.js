@@ -4,9 +4,12 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var socketio = require("socket.io");  // importing socket.io 
+var redis = require('redis');
+const { default: Axios } = require('axios');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
 
 var app = express();
 
@@ -17,6 +20,16 @@ const server = require('http').createServer(app);
 // Create the Socket IO server on  
 // the top of http server 
 const io = socketio(server); 
+
+//Connecting to Redis Server thru the client tool
+const redisClient = redis.createClient({
+  host: '127.0.0.1',
+  port: 6379
+});
+
+redisClient.on("error", function(error) {
+  console.error(error);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,18 +48,28 @@ app.use('/chat', function(req, res){
   res.sendFile(__dirname + '/views/index.html');
 });
 
+// Todo: Work with redis cache middleware setup
+app.use('/accounts', cache, function(req, res){
+  
+  redisClient.set('totalAccounts', 1000);
+
+  redisClient.get('totalAccounts', (err, count) =>{
+    res.send('Total Accounts: ' + count);
+  });  
+});
+
 io.on('connection', (socket) => { //establishing connection with the socket io client
   let userName;
   console.log('a user connected');
   // working on to capture the emitted event set_nick_name
   socket.on("set_nick_name", (_nickname) => {
     // This console.log would appear in server console. 
-    // During the session I was looking for it in browser console. FACEPALM
+    // During the session I was looking for it in browser console
     userName = _nickname;
     io.emit('get_nick_name', userName);
   });
   
-  socket.on('open_chat_session', (msg) => {  // receives data thru custom event emitted by socket.io client
+  socket.on('open_chat_session', (msg) => {  // receives data thru custom event emitted by socket.io client    
     io.emit('chatting', userName + ": " + msg);  // emitting a msg from the socket io server to all the socket io clients
   });
 });

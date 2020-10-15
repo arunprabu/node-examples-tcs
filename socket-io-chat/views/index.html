@@ -78,9 +78,10 @@
       socket.on('get_nick_name', function (nickname) {
         userName = nickname;
       });
-      
+
       $('form').submit(function (e) {
         e.preventDefault(); // prevents page reloading
+        
         socket.emit('open_chat_session', $('#m').val());
         $('#m').val('');
         return false;
